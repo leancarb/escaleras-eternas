@@ -14,7 +14,7 @@ window.onload = () => {
 
   // Definir Contexto
   ctx = canvas.getContext("2d");
-  canvas.style.backgroundImage = "url('images/bg450x800.jpeg')";
+  canvas.style.backgroundImage = "url('img/fondo.jpeg')";
 
   // Texto
   ctx.font = "16px 'Pixelify Sans', sans-serif";
@@ -22,7 +22,7 @@ window.onload = () => {
   ctx.fillText("tiempo: " + vidas, 20, 50);
 
   // Ubicacion personaje
-  imgPersonaje.src = "images/dis_espalda.png";
+  imgPersonaje.src = "img/dis_espalda.png";
   imgPersonaje.onload = function () {
     personaje1.dibujar();
   };
