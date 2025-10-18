@@ -1,12 +1,22 @@
-//1. Variables
-let canvas;
-let ctx;
-let puntos = 0;
+// componentes fundamentales para que consuma el .html
+// inicializa el juego, crea al personaje y toma input del usuario
+
+//1. Variables globales
+// referencia al elemento canvas de html
+let canvas; 
+// contexto para operaciones de dibujo en 2d
+let ctx; 
+let puntos = 0; 
 let vidas = 6;
-let imgPersonaje = new Image();
+// crea imagen objeto para cargar y guardar la img del pj
+let imgPersonaje = new Image(); 
 
 // Objetos
-let personaje1 = new personaje(175, 650, 128, 128, imgPersonaje);
+// instanciacion del nuevo personaje
+// posicion en 175,650
+// ancho y alto de 128x128 pixeles
+// esta linkeado a la imgPersonaje 
+let personaje1 = new personaje(175, 650, 128, 128, imgPersonaje); 
 
 window.onload = () => {
   // Seleccionar canvas
@@ -38,23 +48,29 @@ function limpiar() {
   personaje1.dibujar();
 }
 
+// funcion constructora del personaje
 function personaje(x, y, ancho, alto, img) {
   // Atributos
+  // almacena la posicion del personaje
   this.x = x;
   this.y = y;
-
+  // dimensiones del personaje
   this.ancho = ancho;
   this.alto = alto;
+  // imagen del persoanje
   this.img = img;
 
   // Metodos
+  // mueve a la izquierda y derecha
   this.left = function () {
     this.x -= 15;
   };
   this.right = function () {
     this.x += 15;
   };
+  // dibuja la imagen del personaje en el canvas
   this.dibujar = function () {
+    //drawImage funcion propia de js que recibe estos parametros
     ctx.drawImage(this.img, this.x, this.y, this.ancho, this.alto);
   };
 }
@@ -76,3 +92,4 @@ document.addEventListener("keydown", function (e) {
   }
   limpiar();
 });
+
