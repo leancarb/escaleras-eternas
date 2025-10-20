@@ -24,7 +24,7 @@ window.onload = () => {
 
   // Definir Contexto
   ctx = canvas.getContext("2d");
-  canvas.style.backgroundImage = "url('img/fondo.jpeg')";
+  canvas.style.backgroundImage = "url('img/bg450x800.jpeg')";
 
   // Texto
   ctx.font = "16px 'Pixelify Sans', sans-serif";
