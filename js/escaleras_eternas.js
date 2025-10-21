@@ -21,6 +21,7 @@ function Elemento(x,y,ancho,alto,img,tipo){ //img,x,y,ancho, alto,tipo
     this.ancho=ancho;
     this.alto=alto;
     this.tipo=tipo;
+    this.puntuado=false
 
     //metodos
     this.dibujar=function(){
@@ -65,6 +66,7 @@ function Elemento(x,y,ancho,alto,img,tipo){ //img,x,y,ancho, alto,tipo
                   vidas=vidas-2;
               }
             this.sortear();
+            this.puntuado = false;
         }
 
         // retornamos valor estaColisionando para usar en metodo evadir
@@ -80,9 +82,12 @@ function Elemento(x,y,ancho,alto,img,tipo){ //img,x,y,ancho, alto,tipo
     if (
         (colisione == false) 
         && (this.y >= personajeUno.y + 1) 
+        && (this.puntuado == false)
     ) {
         puntos++;
+        this.puntuado = true;
     }
+    console.log(this.puntuado)
 }
     // this.evadir=function(){
     //   if(
