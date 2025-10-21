@@ -12,20 +12,20 @@ let imgCarpeta = new Image();
 // los objetos
 let personajeUno = new Personaje(175, 650, 128, 128, imgPersonaje); 
 let carpetaUno = new Elemento(200, 0, 64, 64, imgCarpeta, "obstaculo");
+// let arquitecturaUno = new Elemento(100, 0, 64, 64, imgCarpeta, "enemigo");
 
-function Elemento(x,y,ancho,alto,img,tipo){ //img,x,y,ancho, alto,tipo
-    //atributos
+function Elemento(x,y,ancho,alto,img,tipo){
     this.img=img;
     this.x=x;
     this.y=y;
     this.ancho=ancho;
     this.alto=alto;
     this.tipo=tipo;
-    this.puntuado=false
+    this.puntuado = false;
 
-    //metodos
+    // metodos
     this.dibujar=function(){
-        ctx.drawImage(this.img,this.x,this.y,this.ancho,this.alto);//img,x,y,ancho,alto
+        ctx.drawImage(this.img,this.x,this.y,this.ancho,this.alto);
     }
 
     this.caer=function(){
@@ -37,28 +37,22 @@ function Elemento(x,y,ancho,alto,img,tipo){ //img,x,y,ancho, alto,tipo
     }
 
     this.sortear=function(){
-        //cuando los elementos se vayan de pantalla, los vamos a reubicar
         /*
             Math.floor(Math.random() * (max - min + 1))+ min;
         */
-        //x entre 30 (minimo) y 450 (maximo)
         this.x=Math.floor(Math.random() * (450 - 30 + 1))+ 30;
-
-        //y entre -40 (maximo) y -130 (minimo)
         this.y=Math.floor(Math.random() * ((-40) - (-130) + 1))+ (-130);
     }
 
-    this.colisionar=function(){
-        //guardo resultado de expresion booleana en constante para usar en metodo evadir
+
+    this.colisionar=function(){ 
         const estaColisionando = (
             (this.x > personajeUno.x - this.ancho) 
             && (this.x < personajeUno.x + personajeUno.ancho)
             && (this.y > personajeUno.y - this.alto)
             && (this.y < personajeUno.y + personajeUno.alto)
         );
-        
         {
-            //console.log("colisioné");
           if (estaColisionando){
               if(this.tipo=="obstaculo"){
                   vidas--;
@@ -67,37 +61,20 @@ function Elemento(x,y,ancho,alto,img,tipo){ //img,x,y,ancho, alto,tipo
               }
             this.sortear();
             this.puntuado = false;
+          }
+          return estaColisionando; // para usar en this.evadir()
         }
-
-        // retornamos valor estaColisionando para usar en metodo evadir
-        return estaColisionando;
     }
-  }
 
-  this.evadir = function(){
-    // guardo el valor booleano retornado de this.colisionar
-    const colisione = this.colisionar();
-
-    // verificio si colisione, si no gano puntos
-    if (
-        (colisione == false) 
-        && (this.y >= personajeUno.y + 1) 
-        && (this.puntuado == false)
-    ) {
-        puntos++;
-        this.puntuado = true;
+    this.evadir = function(){
+      const colisione = this.colisionar();
+      if (
+          (colisione == false) 
+          && (this.y >= personajeUno.y + this.alto - 1)
+      ) {
+          puntos++;
+      }
     }
-    console.log(this.puntuado)
-}
-    // this.evadir=function(){
-    //   if(
-    //     (this.colisionar == false)
-    //     && (this.y >= personajeUno.y+1)
-    //   ){
-    //     puntos++;
-    //   }
-    // }
-
 }
 
 // funcion constructora del personaje
@@ -170,7 +147,7 @@ window.onload = function() {
 };
 
 function dibujarTexto(){
-    ctx.font = "16px 'Pixelify Sans', sans-serif";
+    ctx.font = "16px 'ByteBounce', sans-serif";
     ctx.fillText("puntos: " + puntos, 20, 30);
     ctx.fillText("vidas: " + vidas, 20, 50);
 }
