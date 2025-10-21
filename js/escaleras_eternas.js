@@ -1,64 +1,64 @@
-// componentes fundamentales para que consuma el .html
-// inicializa el juego, crea al personaje y toma input del usuario
-
-//1. Variables globales
-// referencia al elemento canvas de html
 let canvas; 
-// contexto para operaciones de dibujo en 2d
 let ctx; 
+
+// variables del juego
 let puntos = 0; 
 let vidas = 6;
-// crea imagen objeto para cargar y guardar la img del pj
+
+// variables para las imagenes
 let imgPersonaje = new Image(); 
+let imgCarpeta = new Image();
 
-// Objetos
-// instanciacion del nuevo personaje
-// posicion en 175,650
-// ancho y alto de 128x128 pixeles
-// esta linkeado a la imgPersonaje 
-let personaje1 = new personaje(175, 650, 128, 128, imgPersonaje); 
+// los objetos
+let personajeUno = new Personaje(175, 650, 128, 128, imgPersonaje); 
+let carpetaUno = new Elemento(200, 0, 64, 64, imgCarpeta, "obstaculo");
 
-window.onload = () => {
-  // Seleccionar canvas
-  canvas = document.getElementById("canvas");
+function Elemento(x,y,ancho,alto,img,tipo){ //img,x,y,ancho, alto,tipo
+    //atributos
+    this.img=img;
+    this.x=x;
+    this.y=y;
+    this.ancho=ancho;
+    this.alto=alto;
+    this.tipo=tipo;
 
-  // Definir Contexto
-  ctx = canvas.getContext("2d");
-  canvas.style.backgroundImage = "url('img/bg450x800.jpeg')";
+    //metodos
+    this.dibujar=function(){
+        ctx.drawImage(this.img,this.x,this.y,this.ancho,this.alto);//img,x,y,ancho,alto
+    }
 
-  // Texto
-  ctx.font = "16px 'Pixelify Sans', sans-serif";
-  ctx.fillText("puntos: " + puntos, 20, 30);
-  ctx.fillText("tiempo: " + vidas, 20, 50);
+    this.caer=function(){
+        if(this.y<850){
+            this.y+=2;
+        }else{
+            this.sortear();
+        }
+    }
 
-  // Ubicacion personaje
-  imgPersonaje.src = "img/dis_espalda.png";
-  imgPersonaje.onload = function () {
-    personaje1.dibujar();
-  };
-};
+    this.sortear=function(){
+        //cuando los elementos se vayan de pantalla, los vamos a reubicar
+        /*
+            Math.floor(Math.random() * (max - min + 1))+ min;
+        */
+        //x entre 30 (minimo) y 450 (maximo)
+        this.x=Math.floor(Math.random() * (450 - 30 + 1))+ 30;
 
-function limpiar() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.font = "16px 'Pixelify Sans', sans-serif";
-  ctx.fillText("puntos: " + puntos, 20, 30);
-  ctx.fillText("tiempo: " + vidas, 20, 50);
-
-  // Redibujar
-  personaje1.dibujar();
+        //y entre -40 (maximo) y -130 (minimo)
+        this.y=Math.floor(Math.random() * ((-40) - (-130) + 1))+ (-130);
+    }
 }
 
 // funcion constructora del personaje
-function personaje(x, y, ancho, alto, img) {
+function Personaje(x, y, ancho, alto, img) {
   // Atributos
   // almacena la posicion del personaje
-  this.x = x;
-  this.y = y;
+  this.x=x;
+  this.y=y;
   // dimensiones del personaje
-  this.ancho = ancho;
-  this.alto = alto;
+  this.ancho=ancho;
+  this.alto=alto;
   // imagen del persoanje
-  this.img = img;
+  this.img=img;
 
   // Metodos
   // mueve a la izquierda y derecha
@@ -75,21 +75,65 @@ function personaje(x, y, ancho, alto, img) {
   };
 }
 
+window.onload = function() {
+  // Seleccionar canvas
+  canvas = document.getElementById("canvas");
+  canvas.style.backgroundImage = "url('img/bg450x800.jpeg')";
+
+  // Definir Contexto
+  ctx = canvas.getContext("2d");
+
+
+  // Texto
+  dibujarTexto();
+
+  // Dibujar personaje
+  imgPersonaje.src = "img/dis_espalda.png";
+  imgPersonaje.onload = function () {
+    personajeUno.dibujar();
+  };
+
+  // Dibujar carpeta
+  imgCarpeta.src = "img/carpeta.png";
+  imgCarpeta.onload = function () {
+    carpetaUno.dibujar();
+  }
+
+
+  setInterval(function(){ 
+    if(vidas>0){
+        carpetaUno.caer();
+
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        personajeUno.dibujar();
+        carpetaUno.dibujar();
+        dibujarTexto();
+      
+    }
+  },1000/24);
+};
+
+function dibujarTexto(){
+    ctx.font = "16px 'Pixelify Sans', sans-serif";
+    ctx.fillText("puntos: " + puntos, 20, 30);
+    ctx.fillText("tiempo: " + vidas, 20, 50);
+}
+
 document.addEventListener("keydown", function (e) {
   switch (e.key) {
     case "a":
-      personaje1.left();
+      personajeUno.left();
       break;
     case "ArrowLeft":
-      personaje1.left();
+      personajeUno.left();
       break;
     case "d":
-      personaje1.right();
+      personajeUno.right();
       break;
     case "ArrowRight":
-      personaje1.right();
+      personajeUno.right();
       break;
   }
-  limpiar();
 });
 
