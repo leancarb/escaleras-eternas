@@ -29,7 +29,7 @@ function Elemento(x,y,ancho,alto,img,tipo){ //img,x,y,ancho, alto,tipo
 
     this.caer=function(){
         if(this.y<850){
-            this.y+=2;
+            this.y+=3;
         }else{
             this.sortear();
         }
@@ -46,6 +46,53 @@ function Elemento(x,y,ancho,alto,img,tipo){ //img,x,y,ancho, alto,tipo
         //y entre -40 (maximo) y -130 (minimo)
         this.y=Math.floor(Math.random() * ((-40) - (-130) + 1))+ (-130);
     }
+
+    this.colisionar=function(){
+        //guardo resultado de expresion booleana en constante para usar en metodo evadir
+        const estaColisionando = (
+            (this.x > personajeUno.x - this.ancho) 
+            && (this.x < personajeUno.x + personajeUno.ancho)
+            && (this.y > personajeUno.y - this.alto)
+            && (this.y < personajeUno.y + personajeUno.alto)
+        );
+        
+        {
+            //console.log("colisioné");
+          if (estaColisionando){
+              if(this.tipo=="obstaculo"){
+                  vidas--;
+              }else if(this.tipo=="enemigo"){
+                  vidas=vidas-2;
+              }
+            this.sortear();
+        }
+
+        // retornamos valor estaColisionando para usar en metodo evadir
+        return estaColisionando;
+    }
+  }
+
+  this.evadir = function(){
+    // guardo el valor booleano retornado de this.colisionar
+    const colisione = this.colisionar();
+
+    // verificio si colisione, si no gano puntos
+    if (
+        (colisione == false) 
+        && (this.y >= personajeUno.y + 1) 
+    ) {
+        puntos++;
+    }
+}
+    // this.evadir=function(){
+    //   if(
+    //     (this.colisionar == false)
+    //     && (this.y >= personajeUno.y+1)
+    //   ){
+    //     puntos++;
+    //   }
+    // }
+
 }
 
 // funcion constructora del personaje
@@ -63,10 +110,10 @@ function Personaje(x, y, ancho, alto, img) {
   // Metodos
   // mueve a la izquierda y derecha
   this.left = function () {
-    this.x -= 15;
+    this.x -= 18;
   };
   this.right = function () {
-    this.x += 15;
+    this.x += 18;
   };
   // dibuja la imagen del personaje en el canvas
   this.dibujar = function () {
@@ -104,6 +151,9 @@ window.onload = function() {
     if(vidas>0){
         carpetaUno.caer();
 
+        carpetaUno.colisionar();
+        carpetaUno.evadir();
+
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         personajeUno.dibujar();
@@ -117,7 +167,7 @@ window.onload = function() {
 function dibujarTexto(){
     ctx.font = "16px 'Pixelify Sans', sans-serif";
     ctx.fillText("puntos: " + puntos, 20, 30);
-    ctx.fillText("tiempo: " + vidas, 20, 50);
+    ctx.fillText("vidas: " + vidas, 20, 50);
 }
 
 document.addEventListener("keydown", function (e) {
