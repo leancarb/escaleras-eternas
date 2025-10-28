@@ -94,6 +94,7 @@ function Personaje(x, y, ancho, alto, img) {
   this.alto = alto;
   // imagen del persoanje
   this.img = img;
+
   // Metodos
   // mueve a la izquierda y derecha
   this.left = function () {
@@ -115,7 +116,7 @@ const fuente = new FontFace('ByteBounce', "url('font/ByteBounce.ttf') format('tr
 window.onload = function () {
   // Seleccionar canvas
   canvas = document.getElementById("canvas");
-  canvas.style.backgroundImage = "url('img/bgnuevo.jpeg')";
+  canvas.style.backgroundImage = "url('img/fondoescaleras.png')";
 
   // Definir Contexto
   ctx = canvas.getContext("2d");
@@ -135,17 +136,20 @@ window.onload = function () {
   personajeUno.dibujar();
   };
 
-  // Dibujar carpeta
-  imgCarpeta.src = "img/carpeta.png";
+  //Dibujar Objetos
+  //Escuadra
+  imgCarpeta.src = "img/escuadra.png";
   imgCarpeta.onload = function () {
   carpetaUno.dibujar();
   };
 
-    // Dibujar Arquitectura
-  imgArquitectura.src = "img/Arquitectura.png";
+  //Dibujar Enemigos
+  //Paisajismo
+  imgArquitectura.src = "img/paisajismo.png";
   imgArquitectura.onload = function () {
   arquitecturaUno.dibujar();
   };
+
 
   function iniciarJuego() {
   setInterval(function () {
@@ -178,8 +182,8 @@ function dibujarTexto() {
   ctx.strokeText("Puntos: " + puntos, 20, 40);
   ctx.fillText("Puntos: " + puntos, 20, 40);
   // Vidas
-  ctx.strokeText("Vidas: " + vidas, 330, 40);
-  ctx.fillText("Vidas: " + vidas, 330, 40);
+  ctx.strokeText("Vidas: " + vidas, 480, 40);
+  ctx.fillText("Vidas: " + vidas, 480, 40);
 }
 
 document.addEventListener("keydown", function (e) {
