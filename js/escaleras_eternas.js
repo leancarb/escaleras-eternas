@@ -1,5 +1,5 @@
-let canvas;
-let ctx;
+let canvas; // <canvas> en html me dió un area de pixeles para trabajar, ahora creo una variable llamada canvas para que js la use
+let ctx; // sin esto no puedo dibujar en <canvas>, necesito crear esta variable para
 
 // variables del juego
 let puntos = 0;
@@ -40,7 +40,7 @@ function Elemento(x, y, ancho, alto, img, tipo) {
   this.sortear = function () {
     /*
             Math.floor(Math.random() * (max - min + 1))+ min;
-        */
+    */
     this.x = Math.floor(Math.random() * (350 - 30 + 1)) + 30;
     this.y = Math.floor(Math.random() * (-40 - -130 + 1)) + -130;
     this.puntuado = false;
@@ -115,8 +115,8 @@ const fuente = new FontFace('ByteBounce', "url('font/ByteBounce.ttf') format('tr
 
 window.onload = function () {
   // Seleccionar canvas
-  canvas = document.getElementById("canvas");
-  canvas.style.backgroundImage = "url('img/fondoescaleras.png')";
+  canvas = document.getElementById("canvas"); // selecciono <canvas> del html, gracias a que tiene un id="canvas"
+  canvas.style.backgroundImage = "url('img/fondoescaleras.png')"; // style.backgroindImage es una propiedad de js y la uso para darle un png de fondo
 
   // Definir Contexto
   ctx = canvas.getContext("2d");
@@ -128,7 +128,7 @@ window.onload = function () {
 
   // Iniciar el juego
     iniciarJuego();
-};
+  };
 
   // Dibujar personaje
   imgPersonaje.src = "img/dis_espalda.png";
@@ -149,7 +149,6 @@ window.onload = function () {
   imgArquitectura.onload = function () {
   arquitecturaUno.dibujar();
   };
-
 
   function iniciarJuego() {
   setInterval(function () {
