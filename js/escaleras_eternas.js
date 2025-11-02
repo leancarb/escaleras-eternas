@@ -21,6 +21,7 @@ let imgCarpeta = new Image();
 let imgCutter = new Image();
 let imgEscuadra = new Image();
 let imgPintura = new Image();
+let imgCafe = new Image();
 
 // variables para las imagenes de enemigos
 let imgGrafico = new Image();
@@ -33,6 +34,7 @@ let imgArquitectura = new Image();
 let personajeUno = new Personaje(175, 580, 100, 100, imgPersonaje);
 let obstaculoUno = new Elemento(200, 0, 80, 80, imgCarpeta, "obstaculo");
 let enemigoUno = new Elemento(100, 0, 128, 128, imgGrafico, "enemigo");
+let cafeUno = new Elemento(300, 0, 60, 60, imgCafe, "cafe");
 
 function Elemento(x, y, ancho, alto, img, tipo) {
   this.img = img;
@@ -107,6 +109,8 @@ function Elemento(x, y, ancho, alto, img, tipo) {
         vidas--;
       } else if (this.tipo == "enemigo") {
         vidas = vidas - 2;
+      } else if (this.tipo == "cafe") {
+        puntos++;
       }
       this.sortear();
       this.puntuado = false;
@@ -200,6 +204,7 @@ window.onload = function () {
   imgPaisajismo.src = "img/paisajismo.png";
   imgIndustrial.src = "img/industrial.png";
   imgArquitectura.src = "img/arquitectura.png";
+  imgCafe.src = "img/cafe.png";
 
   // iniciar el juego
   iniciarJuego();
@@ -208,6 +213,7 @@ window.onload = function () {
 function iniciarJuego() {
   obstaculoUno.sortear();
   enemigoUno.sortear();
+  cafeUno.sortear();
 
   let posicionFondo = 0;
   setInterval(function () {
@@ -217,6 +223,7 @@ function iniciarJuego() {
     if (vidas > 0 && juegoActivo) {
       obstaculoUno.caer();
       enemigoUno.caer();
+      cafeUno.caer();
 
       const colisionObstaculo = obstaculoUno.colisionar();
       obstaculoUno.evadir(colisionObstaculo);
@@ -224,10 +231,14 @@ function iniciarJuego() {
       const colisionEnemigo = enemigoUno.colisionar();
       enemigoUno.evadir(colisionEnemigo);
 
+      const colisionCafe = cafeUno.colisionar();
+      cafeUno.evadir(colisionCafe);
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       personajeUno.dibujar();
       obstaculoUno.dibujar();
       enemigoUno.dibujar();
+      cafeUno.dibujar();
       dibujarTexto();
 
       // verificar si llego al piso 5
