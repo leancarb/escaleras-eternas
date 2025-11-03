@@ -5,18 +5,20 @@ let ctx;
 let imgIzquierda = new Image();
 let imgDerecha = new Image();
 let imgCorrer = new Image();
+let imgCafe = new Image();
 let imgObjetos = new Image();
 let imgEnemigos = new Image();
 
 //los objetos
-let Izquierda = new Elemento(imgIzquierda,20,270,100,50,"control");
-let Derecha = new Elemento(imgDerecha,20,320,100,50,"control");
-let Correr = new Elemento(imgCorrer,20,370,100,50,"control");
-let Objetos = new Elemento(imgObjetos,20,490,200,80,"objetos");
-let Enemigos = new Elemento(imgEnemigos,20,570,300,100,"enemigos");
+let Izquierda = new Elemento(imgIzquierda,20,290,100,50,"control"); //img,x,y,ancho,alto,tipo
+let Derecha = new Elemento(imgDerecha,20,340,100,50,"control");
+let Cafe = new Elemento(imgCafe,20,465,60,80,"objeto");
+let Objetos = new Elemento(imgObjetos,30,550,150,60,"objetos");
+let Enemigos = new Elemento(imgEnemigos,30,610,220,90,"enemigos")
 
 let hoverJugar = false;
 
+// Dibujo elementos
 function Elemento(img,x,y,ancho,alto,tipo){
   this.img = img;
   this.x = x;
@@ -33,21 +35,21 @@ function Elemento(img,x,y,ancho,alto,tipo){
 // Crear y cargar la fuente
 const fuente = new FontFace('ByteBounce', "url('font/ByteBounce.ttf') format('truetype')");
 
+// Mostrar imagen fondo en canvas
 window.onload = function() {
   canvas = document.getElementById("canvas");
   canvas.style.backgroundImage = "url('img/escalerasblur.png')";
   canvas.style.backgroundSize = "cover"; 
   canvas.style.backgroundPosition = "center";
-  
   ctx = canvas.getContext('2d');
-
+  // Cargar fuente
   fuente.load().then(function() {
     document.fonts.add(fuente);
-
+    // Cargar imagenes
     imgIzquierda.src = "img/izquierda.png";
     imgDerecha.src = "img/derecha.png";
-    imgCorrer.src = "img/correr.png";
     imgObjetos.src = "img/objetos.png";
+    imgCafe.src = "img/cafe.png"; 
     imgEnemigos.src = "img/enemigos.png";
 
     imgEnemigos.onload = function() {
@@ -79,51 +81,53 @@ function dibujarMenu(hover = false) {
 
   //Objetivo 
   ctx.textAlign = "right";
-  ctx.font = "65px ByteBounce";
-  ctx.strokeText("Objetivo", 210, 130);
-  ctx.fillText("Objetivo", 210, 130);
+  ctx.font = "63px ByteBounce";
+  ctx.strokeText("Objetivo", 210, 120);
+  ctx.fillText("Objetivo", 210, 120);
 
   ctx.textAlign = "center";
-  ctx.font = "40px ByteBounce";
-  ctx.strokeText("Llega al 4to piso a tiempo", 300, 170);
-  ctx.fillText("Llega al 4to piso a tiempo", 300, 170);
-  ctx.strokeText("y suma la mayor cantidad de puntos", 300, 200);
-  ctx.fillText("y suma la mayor cantidad de puntos", 300, 200);
+  ctx.font = "37px ByteBounce";
+  ctx.strokeText("Llegar a clase al 4to piso a tiempo", 300, 160);
+  ctx.fillText("Llegar a clase al 4to piso a tiempo", 300, 160);
+  ctx.strokeText("sin chocarte a alumnos de otras carreras", 300, 190);
+  ctx.fillText("sin chocarte a alumnos de otras carreras", 300, 190);
 
-  //Controles
+  // Titulo "Controles"
   ctx.textAlign = "right";
-  ctx.font = "65px ByteBounce";
-  ctx.strokeText("Controles", 245, 260);
-  ctx.fillText("Controles", 245, 260);
-
-  ctx.font = "35px ByteBounce";
-  ctx.strokeText("- mover izquierda", 360, 310);
-  ctx.fillText("- mover izquierda", 360, 310);
-
-  ctx.strokeText("- mover derecha", 345, 360);
-  ctx.fillText("- mover derecha", 345, 360);
-
-  ctx.strokeText("- correr", 232, 410);
-  ctx.fillText("- correr", 232, 410);
-
-  //Elementos
-  ctx.textAlign = "right";
-  ctx.font = "65px ByteBounce";
-  ctx.strokeText("Elementos", 260, 480);
-  ctx.fillText("Elementos", 260, 480);
-
+  ctx.font = "63px ByteBounce";
+  ctx.strokeText("Controles", 245, 270);
+  ctx.fillText("Controles", 245, 270);
+  // dibujar imagenes
   Izquierda.dibujar();
   Derecha.dibujar();
-  Correr.dibujar();
+  // texto idicativo de controles
+  ctx.font = "35px ByteBounce";
+  ctx.strokeText("- mover izquierda",360,328);
+  ctx.fillText("- mover izquierda",360,328);
+
+  ctx.strokeText("- mover derecha",345,380);
+  ctx.fillText("- mover derecha",345,380);
+
+  // Titulo "Elementos"
+  ctx.textAlign = "right";
+  ctx.font = "63px ByteBounce";
+  ctx.strokeText("Elementos", 260, 460);
+  ctx.fillText("Elementos", 260, 460);
+  // dibujar imagenes
+  Cafe.dibujar();
   Objetos.dibujar();
   Enemigos.dibujar();
+  // texto inficativo de elementos
+  ctx.textAlign = "left";
+  ctx.font = "30px ByteBounce";
+  ctx.strokeText("+ 1 punto", Cafe.x + Cafe.ancho + 20, Cafe.y + 55);
+  ctx.fillText("+ 1 punto", Cafe.x + Cafe.ancho + 20, Cafe.y + 55);
 
   ctx.textAlign = "left";
   ctx.font = "30px ByteBounce";
   ctx.strokeText("- 1 punto", Objetos.x + Objetos.ancho + 20, Objetos.y + 40);
   ctx.fillText("- 1 punto", Objetos.x + Objetos.ancho + 20, Objetos.y + 40);
-  ctx.strokeText("+ 1 punto si esquiva", Objetos.x + Objetos.ancho + 20, Objetos.y + 65);
-  ctx.fillText("+ 1 punto si esquiva", Objetos.x + Objetos.ancho + 20, Objetos.y + 65);
+
   ctx.strokeText("- 1 vida", Enemigos.x + Enemigos.ancho + 20, Enemigos.y + 50);
   ctx.fillText("- 1 vida", Enemigos.x + Enemigos.ancho + 20, Enemigos.y + 50);
   ctx.strokeText("+ 2 puntos si esquiva", Enemigos.x + Enemigos.ancho + 20, Enemigos.y + 80);
@@ -133,8 +137,8 @@ function dibujarMenu(hover = false) {
   ctx.textAlign = "right";
   ctx.font = "70px ByteBounce";
   ctx.fillStyle = hoverJugar ? "gray" : "white";
-  ctx.strokeText("Jugar", 360, 790);
-  ctx.fillText("Jugar", 360, 790);
+  ctx.strokeText("Jugar", 360, 770);
+  ctx.fillText("Jugar", 360, 770);
   ctx.fillStyle = "white";
 }
 
@@ -158,7 +162,7 @@ function detectarClick(e) {
     window.location.href = "escaleras_eternas.html";
   }
 
-  // Click en el título "¿Cómo jugar?"
+  // Click en "¿Cómo jugar?"
   if (x > 80 && x < 520 && y > 20 && y < 90) {
     window.location.href = "inicio.html";
   }

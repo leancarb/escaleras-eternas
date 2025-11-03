@@ -5,38 +5,67 @@ let ctx;
 let puntos = 0;
 let vidas = 5;
 let piso = 0;
-let velocidadCaida = 2;
-let velocidadMovimiento = 50;
-let margenX = 30;
-let respawnMin = 40;
-let respawnMax = 130;
 let juegoActivo = true;
-let ultimoAumento = 0;
 
-// variables para las imagenes del personaje
+// control de movimiento
+let teclaIzquierda = false;
+let teclaDerecha = false;
+
+// Variables para las imagenes
+//personaje
 let imgPersonaje = new Image();
 
-// variables para las imagenes de obstaculos
-let imgCarpeta = new Image();
-let imgCutter = new Image();
-let imgEscuadra = new Image();
-let imgPintura = new Image();
+//cafe
 let imgCafe = new Image();
 
-// variables para las imagenes de enemigos
+//obstaculos
+let imgCarpeta = new Image();
+let imgEscuadra = new Image();
+let imgCutter = new Image();
+let imgPintura = new Image();
+
+//enemigos
+let imgArquitectura = new Image();
+let imgIndustrial = new Image();
 let imgGrafico = new Image();
 let imgIndumentaria = new Image();
 let imgPaisajismo = new Image();
-let imgIndustrial = new Image();
-let imgArquitectura = new Image();
+let imgFondo = new Image();
 
-// los objetos
-let personajeUno = new Personaje(175, 580, 100, 100, imgPersonaje);
-let obstaculoUno = new Elemento(200, 0, 80, 80, imgCarpeta, "obstaculo");
-let enemigoUno = new Elemento(100, 0, 128, 128, imgGrafico, "enemigo");
-let cafeUno = new Elemento(300, 0, 60, 60, imgCafe, "cafe");
+// imagenes de ganar y perder
+let imgGano = new Image();
+let imgPerdio = new Image();
 
-function Elemento(x, y, ancho, alto, img, tipo) {
+// personaje con sprite
+let personaje = new Personaje(175, 580, 100, 100, imgPersonaje);
+
+//cafe
+let cafe = new Obstaculo(200, -200, 56, 80, imgCafe, "cafe");
+
+//obstaculos
+let carpeta = new Obstaculo(200, -400, 57, 80, imgCarpeta, "obstaculo");
+let escuadra = new Obstaculo(200, -600, 79, 80, imgEscuadra, "obstaculo");
+let cutter = new Obstaculo(200, -800, 80, 59, imgCutter, "obstaculo");
+let pintura = new Obstaculo(200, -1000, 80, 80, imgPintura, "obstaculo");
+
+// enemigos con sprite
+let enemigoUno = new Enemigo(50, -300, 128, 128, imgArquitectura, "enemigo");
+let enemigoDos = new Enemigo(200, -700, 128, 128, imgGrafico, "enemigo");
+let enemigoTres = new Enemigo(100, -900, 128, 128, imgIndumentaria, "enemigo");
+let enemigoCuatro = new Enemigo(250, -1200, 128, 128, imgPaisajismo, "enemigo");
+
+// variables para animacion de sprites
+let spriteColumna = 0;
+let columnasTotales = 4; // cantidad de frames horizontales en el sprite
+let animacionVelocidad = 4;
+let contadorFrames = 0;
+
+// fondo en movimiento
+let posFondo = 0;
+let velocidadFondo = 3;
+
+// Funcion de elementos (objetos que caen)
+function Obstaculo(x, y, ancho, alto, img, tipo) {
   this.img = img;
   this.x = x;
   this.y = y;
@@ -45,218 +74,273 @@ function Elemento(x, y, ancho, alto, img, tipo) {
   this.tipo = tipo;
   this.puntuado = false;
 
-  // metodos
   this.dibujar = function () {
     ctx.drawImage(this.img, this.x, this.y, this.ancho, this.alto);
   };
 
   this.caer = function () {
-    if (this.y < canvas.height + this.alto) {
-      this.y += velocidadCaida;
-    } else {
-      this.sortear();
-    }
+    if (this.y < 850) this.y += 6;
+    else this.sortear();
   };
 
   this.sortear = function () {
-    /* Math.floor(Math.random() * (max - min + 1))+ min */
     this.x =
-      Math.floor(Math.random() * (canvas.width - this.ancho - margenX * 2)) +
-      margenX;
-    const extra =
-      Math.floor(Math.random() * (respawnMax - respawnMin + 1)) + respawnMin;
-    this.y = -this.alto - extra;
-
+      Math.floor(Math.random() * (canvas.width - this.ancho - 30 * 2)) + 30;
+    this.y = Math.floor(Math.random() * (-50 - -600 + 1)) + -600;
     this.puntuado = false;
-
-    // cambiar imagen segun el piso
-    if (this.tipo == "obstaculo") {
-      if (piso == 0) {
-        this.img = imgCarpeta;
-      } else if (piso == 1) {
-        this.img = imgCutter;
-      } else if (piso == 2) {
-        this.img = imgEscuadra;
-      } else if (piso == 3) {
-        this.img = imgPintura;
-      } else if (piso >= 4) {
-        this.img = imgPintura;
-      }
-    } else if (this.tipo == "enemigo") {
-      if (piso == 0) {
-        this.img = imgGrafico;
-      } else if (piso == 1) {
-        this.img = imgIndumentaria;
-      } else if (piso == 2) {
-        this.img = imgPaisajismo;
-      } else if (piso == 3) {
-        this.img = imgIndustrial;
-      } else if (piso >= 4) {
-        this.img = imgArquitectura;
-      }
-    }
   };
 
   this.colisionar = function () {
     const estaColisionando =
-      this.x > personajeUno.x - this.ancho &&
-      this.x < personajeUno.x + personajeUno.ancho &&
-      this.y > personajeUno.y - this.alto &&
-      this.y < personajeUno.y + personajeUno.alto;
+      this.x < personaje.x + personaje.ancho &&
+      this.x + this.ancho > personaje.x &&
+      this.y < personaje.y + personaje.alto &&
+      this.y + this.alto > personaje.y;
 
     if (estaColisionando) {
-      if (this.tipo == "obstaculo") {
-        vidas--;
-      } else if (this.tipo == "enemigo") {
-        vidas = vidas - 2;
-      } else if (this.tipo == "cafe") {
-        puntos++;
+      if (this.tipo === "cafe") {
+        puntos += 1; // el café suma
+        actualizarPiso(); // ver si subi de piso
+      } else {
+        puntos -= 1; // otros objetos restan
+        if (puntos < 0) puntos = 0; // no baja de 0
       }
       this.sortear();
-      this.puntuado = false;
     }
     return estaColisionando;
   };
-
-  this.evadir = function (colisione) {
-    if (
-      colisione == false &&
-      this.y >= personajeUno.y + this.alto - 1 &&
-      !this.puntuado
-    ) {
-      if (this.tipo == "obstaculo") {
-        puntos += 1;
-      } else if (this.tipo == "enemigo") {
-        puntos += 2;
-      }
-      this.puntuado = true;
-
-      // actualizar piso
-      piso = Math.floor(puntos / 8);
-
-      // aumentar velocidad cada 8 puntos
-      if (Math.floor(puntos / 8) > ultimoAumento) {
-        velocidadCaida += 1;
-        ultimoAumento = Math.floor(puntos / 8);
-      }
-    }
-  };
 }
 
-// funcion constructora del personaje
+// Funcion del personaje principal (sprite animado)
 function Personaje(x, y, ancho, alto, img) {
-  // Atributos
   this.x = x;
   this.y = y;
   this.ancho = ancho;
   this.alto = alto;
   this.img = img;
 
-  // Metodos
-  this.left = function () {
-    this.x -= velocidadMovimiento;
-    if (canvas) {
-      this.x = Math.max(0, Math.min(this.x, canvas.width - this.ancho));
+  this.mover = function () {
+    if (teclaIzquierda) {
+      this.x -= 10;
+      if (this.x < 0) this.x = 0;
+    }
+    if (teclaDerecha) {
+      this.x += 10;
+      if (this.x + this.ancho > canvas.width)
+        this.x = canvas.width - this.ancho;
     }
   };
-  this.right = function () {
-    this.x += velocidadMovimiento;
-    if (canvas) {
-      this.x = Math.max(0, Math.min(this.x, canvas.width - this.ancho));
-    }
-  };
+
   this.dibujar = function () {
-    ctx.drawImage(this.img, this.x, this.y, this.ancho, this.alto);
+    contadorFrames++;
+    if (contadorFrames >= animacionVelocidad) {
+      spriteColumna = (spriteColumna + 1) % columnasTotales;
+      contadorFrames = 0;
+    }
+
+    const frameAncho = this.img.width / columnasTotales;
+    const frameAlto = this.img.height;
+
+    ctx.drawImage(
+      this.img,
+      spriteColumna * frameAncho,
+      0,
+      frameAncho,
+      frameAlto,
+      this.x,
+      this.y,
+      this.ancho,
+      this.alto
+    );
   };
 }
 
-// crear y cargar la fuente
+// Funcion de enemigos (sprite animado)
+function Enemigo(x, y, ancho, alto, img) {
+  this.img = img;
+  this.x = x;
+  this.y = y;
+  this.ancho = ancho;
+  this.alto = alto;
+  this.puntuado = false;
+  this.spriteColumna = 0;
+  this.columnasTotales = 4;
+  this.frameCount = 0;
+  this.animacionVelocidad = 6;
+
+  this.caer = function () {
+    if (this.y < 850) this.y += 5;
+    else this.sortear();
+  };
+
+  this.sortear = function () {
+    this.x =
+      Math.floor(Math.random() * (canvas.width - this.ancho - 30 * 2)) + 30;
+    this.y = Math.floor(Math.random() * (-100 - -700 + 1)) + -700;
+    this.puntuado = false;
+  };
+
+  this.colisionar = function () {
+    const colision =
+      this.x < personaje.x + personaje.ancho &&
+      this.x + this.ancho > personaje.x &&
+      this.y < personaje.y + personaje.alto &&
+      this.y + this.alto > personaje.y;
+
+    if (colision) {
+      vidas -= 1; // al chocar resta vida
+      this.sortear();
+      this.puntuado = true;
+    }
+    return colision;
+  };
+
+  // funcion para cuando esquivo al enemigo
+  this.evadir = function () {
+    // si el enemigo paso por abajo del personaje y no lo toque
+    if (this.puntuado == false && this.y > personaje.y + personaje.alto) {
+      puntos = puntos + 2; // sumo 2 puntos
+      this.puntuado = true; // marco que ya lo conte
+      actualizarPiso(); // ver si subi de piso
+    }
+  };
+
+  this.dibujar = function () {
+    this.frameCount++;
+    if (this.frameCount >= this.animacionVelocidad) {
+      this.spriteColumna = (this.spriteColumna + 1) % this.columnasTotales;
+      this.frameCount = 0;
+    }
+
+    const frameAncho = this.img.width / this.columnasTotales;
+    const frameAlto = this.img.height;
+
+    ctx.drawImage(
+      this.img,
+      this.spriteColumna * frameAncho,
+      0,
+      frameAncho,
+      frameAlto,
+      this.x,
+      this.y,
+      this.ancho,
+      this.alto
+    );
+  };
+}
+
+// funcion para actualizar el piso cada 8 puntos
+function actualizarPiso() {
+  piso = Math.floor(puntos / 8);
+}
+
+/* INICIO DEL JUEGO */
 const fuente = new FontFace(
   "ByteBounce",
   "url('font/ByteBounce.ttf') format('truetype')"
 );
 
 window.onload = function () {
-  // seleccionar canvas
   canvas = document.getElementById("canvas");
-  canvas.style.backgroundImage = "url('img/fondoescaleras.png')";
-
-  // definir contexto
   ctx = canvas.getContext("2d");
 
-  // cargar la fuente
+  canvas.setAttribute("tabindex", "0");
+  canvas.focus();
+
   fuente.load();
   document.fonts.add(fuente);
   document.fonts.ready;
 
-  // cargar imagen del personaje
-  imgPersonaje.src = "img/dis_espalda.png";
-
-  // cargar imagenes de obstaculos
-  imgCarpeta.src = "img/carpeta.png";
-  imgCutter.src = "img/cutter.png";
-  imgEscuadra.src = "img/escuadra.png";
-  imgPintura.src = "img/pintura.png";
-
-  // cargar imagenes de enemigos
-  imgGrafico.src = "img/grafico.png";
-  imgIndumentaria.src = "img/indumentaria.png";
-  imgPaisajismo.src = "img/paisajismo.png";
-  imgIndustrial.src = "img/industrial.png";
-  imgArquitectura.src = "img/arquitectura.png";
+  imgFondo.src = "img/fondoescaleras.png";
   imgCafe.src = "img/cafe.png";
+  imgCarpeta.src = "img/carpeta.png";
+  imgEscuadra.src = "img/escuadra.png";
+  imgCutter.src = "img/cutter.png";
+  imgPintura.src = "img/pintura.png";
+  imgArquitectura.src = "img/arquitecturasprite.png";
+  imgGrafico.src = "img/graficosprite.png";
+  imgIndumentaria.src = "img/indumentariasprite.png";
+  imgPaisajismo.src = "img/paisajismosprite.png";
+  imgPersonaje.src = "img/dissprite.png";
+  imgGano.src = "img/gano.png";
+  imgPerdio.src = "img/perdio.png";
 
-  // iniciar el juego
-  iniciarJuego();
+  imgPersonaje.onload = function () {
+    iniciarJuego();
+  };
 };
 
-function iniciarJuego() {
-  obstaculoUno.sortear();
-  enemigoUno.sortear();
-  cafeUno.sortear();
-
-  let posicionFondo = 0;
-  setInterval(function () {
-    posicionFondo += velocidadCaida;
-    canvas.style.backgroundPositionY = posicionFondo + "px";
-
-    if (vidas > 0 && juegoActivo) {
-      obstaculoUno.caer();
-      enemigoUno.caer();
-      cafeUno.caer();
-
-      const colisionObstaculo = obstaculoUno.colisionar();
-      obstaculoUno.evadir(colisionObstaculo);
-
-      const colisionEnemigo = enemigoUno.colisionar();
-      enemigoUno.evadir(colisionEnemigo);
-
-      const colisionCafe = cafeUno.colisionar();
-      cafeUno.evadir(colisionCafe);
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      personajeUno.dibujar();
-      obstaculoUno.dibujar();
-      enemigoUno.dibujar();
-      cafeUno.dibujar();
-      dibujarTexto();
-
-      // verificar si llego al piso 5
-      if (piso >= 5) {
-        juegoActivo = false;
-        mostrarMensajeFinal("Llegaste a tiempo!");
-      }
-    } else if (vidas <= 0) {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      mostrarMensajeFinal("La clase ya empezó :(");
-    } else if (!juegoActivo && piso >= 5) {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      mostrarMensajeFinal("Llegaste a tiempo!");
-    }
-  }, 1000 / 60);
+function moverFondo() {
+  posFondo += velocidadFondo;
+  ctx.drawImage(imgFondo, 0, posFondo, canvas.width, canvas.height);
+  ctx.drawImage(
+    imgFondo,
+    0,
+    posFondo - canvas.height,
+    canvas.width,
+    canvas.height
+  );
+  if (posFondo >= canvas.height) posFondo = 0;
 }
 
-// dibujo del texto en pantalla
+function iniciarJuego() {
+  setInterval(function () {
+    if (vidas > 0 && juegoActivo) {
+      personaje.mover();
+
+      //Caen
+      cafe.caer();
+      carpeta.caer();
+      escuadra.caer();
+      cutter.caer();
+      pintura.caer();
+      enemigoUno.caer();
+      enemigoDos.caer();
+      enemigoTres.caer();
+      enemigoCuatro.caer();
+
+      //Colision
+      cafe.colisionar();
+      carpeta.colisionar();
+      escuadra.colisionar();
+      cutter.colisionar();
+      pintura.colisionar();
+      enemigoUno.colisionar();
+      enemigoDos.colisionar();
+      enemigoTres.colisionar();
+      enemigoCuatro.colisionar();
+
+      // ver si esquive enemigos
+      enemigoUno.evadir();
+      enemigoDos.evadir();
+      enemigoTres.evadir();
+      enemigoCuatro.evadir();
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      moverFondo();
+      personaje.dibujar();
+      cafe.dibujar();
+      carpeta.dibujar();
+      escuadra.dibujar();
+      cutter.dibujar();
+      pintura.dibujar();
+      enemigoUno.dibujar();
+      enemigoDos.dibujar();
+      enemigoTres.dibujar();
+      enemigoCuatro.dibujar();
+      dibujarTexto();
+
+      // ver si llego al piso 5
+      if (piso >= 5) {
+        juegoActivo = false;
+        mostrarGano();
+      }
+    } else if (vidas <= 0) {
+      mostrarPerdio();
+    }
+  }, 1000 / 24);
+}
+
 function dibujarTexto() {
   ctx.font = "35px ByteBounce";
   ctx.fillStyle = "white";
@@ -283,32 +367,53 @@ function dibujarTexto() {
   ctx.fillText("Vidas: " + vidas, 480, 40);
 }
 
-// mostrar mensaje final
-function mostrarMensajeFinal(mensaje) {
+// pantalla cuando gana
+function mostrarGano() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // dibujar imagen de gano
+  ctx.drawImage(imgGano, 0, 0, canvas.width, canvas.height);
+
+  // dibujar el texto encima
   ctx.font = "50px ByteBounce";
   ctx.fillStyle = "white";
   ctx.strokeStyle = "black";
   ctx.lineWidth = 5;
   ctx.textAlign = "center";
-
   const x = canvas.width / 2;
-  const y = canvas.height / 2;
-
-  ctx.strokeText(mensaje, x, y);
-  ctx.fillText(mensaje, x, y);
-
+  const y = 700;
+  ctx.strokeText("llegaste a tiempo! :D", x, y);
+  ctx.fillText("llegaste a tiempo! :D", x, y);
   ctx.textAlign = "left";
 }
 
+// pantalla cuando pierde
+function mostrarPerdio() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // dibujar imagen de perdio
+  ctx.drawImage(imgPerdio, 0, 0, canvas.width, canvas.height);
+
+  // dibujar el texto encima
+  ctx.font = "50px ByteBounce";
+  ctx.fillStyle = "white";
+  ctx.strokeStyle = "black";
+  ctx.lineWidth = 5;
+  ctx.textAlign = "center";
+  const x = canvas.width / 2;
+  const y = 700;
+  ctx.strokeText("la clase ya empezó :(", x, y);
+  ctx.fillText("la clase ya empezó :(", x, y);
+  ctx.textAlign = "left";
+}
+
+// Movimiento del personaje
 document.addEventListener("keydown", function (e) {
-  switch (e.key) {
-    case "a":
-    case "ArrowLeft":
-      personajeUno.left();
-      break;
-    case "d":
-    case "ArrowRight":
-      personajeUno.right();
-      break;
-  }
+  if (e.key === "a" || e.key === "ArrowLeft") teclaIzquierda = true;
+  if (e.key === "d" || e.key === "ArrowRight") teclaDerecha = true;
+});
+
+document.addEventListener("keyup", function (e) {
+  if (e.key === "a" || e.key === "ArrowLeft") teclaIzquierda = false;
+  if (e.key === "d" || e.key === "ArrowRight") teclaDerecha = false;
 });

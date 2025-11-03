@@ -51,7 +51,7 @@ function dibujarMenu(hoverIndice = -1) {
   // Botones
   botones.forEach((boton, indice) => {
     if (indice === hoverIndice) {
-      ctx.fillStyle = "gray"; //hover
+      ctx.fillStyle = "gray"; //color del hover
     } else {
       ctx.fillStyle = "white";
     }
@@ -63,6 +63,7 @@ function dibujarMenu(hoverIndice = -1) {
   });
 }
 
+// Funcion que maneja el Hover
 function manejarHover(event) {
   const rect = canvas.getBoundingClientRect();
   const x = event.clientX - rect.left;
@@ -83,6 +84,7 @@ function manejarHover(event) {
   dibujarMenu(hoverIndice);
 }
 
+// Funcion que maneja el click
 function manejarClick(event) {
   const rect = canvas.getBoundingClientRect();
   const x = event.clientX - rect.left;
