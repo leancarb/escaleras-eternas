@@ -2,6 +2,14 @@ let canvas;
 let ctx;
 let fuente = new FontFace('ByteBounce', "url('font/ByteBounce.ttf') format('truetype')");
 
+// Sonido de fondo
+let sonidoFondo = new Audio ("aud/murmullo.wav");
+sonidoFondo.loop = true;
+sonidoFondo.volume = 0.4;
+window.addEventListener("load", () => {
+  sonidoFondo.play();
+});
+
 // Definimos áreas de botones
 const botones = [
   { texto: "JUGAR", x: 300, y: 500, width: 300, height: 70, enlace: "escaleras_eternas.html" },

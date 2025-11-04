@@ -11,6 +11,16 @@ let juegoActivo = true;
 let teclaIzquierda = false;
 let teclaDerecha = false;
 
+// Sonidos
+let sonidoCafe = new Audio ("aud/positivo.mp3");
+let sonidoObstaculo = new Audio ("aud/negativo.mp3");
+let sonidoEnemigo = new Audio ("aud/negativo.mp3");
+let sonidoFondo = new Audio ("aud/murmullo.wav");
+let musicaFondo = new Audio ("aud/musica.mp3");
+musicaFondo.volume = 1;
+sonidoFondo.loop = true;
+musicaFondo.loop = true;
+
 // Variables para las imagenes
 //personaje
 let imgPersonaje = new Image();
@@ -100,9 +110,13 @@ function Obstaculo(x, y, ancho, alto, img, tipo) {
     if (estaColisionando) {
       if (this.tipo === "cafe") {
         puntos += 1; // el café suma
+        sonidoCafe.currentTime = 0;
+        sonidoCafe.play(); // sonido al agarrar café
         actualizarPiso(); // ver si subi de piso
       } else {
         puntos -= 1; // otros objetos restan
+        sonidoObstaculo.currentTime = 0;
+        sonidoObstaculo.play(); // sonido al chocar con obstáculo
         if (puntos < 0) puntos = 0; // no baja de 0
       }
       this.sortear();
@@ -189,6 +203,8 @@ function Enemigo(x, y, ancho, alto, img) {
 
     if (colision) {
       vidas -= 1; // al chocar resta vida
+      sonidoEnemigo.currentTime = 0;
+      sonidoEnemigo.play(); // sonido al chocar con enemigo
       this.sortear();
       this.puntuado = true;
     }
@@ -217,8 +233,7 @@ function Enemigo(x, y, ancho, alto, img) {
 
     ctx.drawImage(
       this.img,
-      this.spriteColumna * frameAncho,
-      0,
+      this.spriteColumna * frameAncho,0,
       frameAncho,
       frameAlto,
       this.x,
@@ -266,6 +281,8 @@ window.onload = function () {
   imgPerdio.src = "img/perdio.png";
 
   imgPersonaje.onload = function () {
+    sonidoFondo.play();
+    musicaFondo.play();
     iniciarJuego();
   };
 };
@@ -274,8 +291,7 @@ function moverFondo() {
   posFondo += velocidadFondo;
   ctx.drawImage(imgFondo, 0, posFondo, canvas.width, canvas.height);
   ctx.drawImage(
-    imgFondo,
-    0,
+    imgFondo,0,
     posFondo - canvas.height,
     canvas.width,
     canvas.height

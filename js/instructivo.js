@@ -1,6 +1,14 @@
 let canvas;
 let ctx;
 
+//Sonido
+let sonidoFondo = new Audio ("aud/murmullo.wav");
+sonidoFondo.loop = true;
+sonidoFondo.volume = 0.4;
+window.addEventListener("load", () => {
+  sonidoFondo.play();
+});
+
 //Variables para las imagenes
 let imgIzquierda = new Image();
 let imgDerecha = new Image();
